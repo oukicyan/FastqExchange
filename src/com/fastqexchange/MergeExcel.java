@@ -184,7 +184,6 @@ public class MergeExcel {
 					collSet.add(s);
 				}
 			}
-
 		}
 		StringBuffer collSb = new StringBuffer();
 		for (String s : collSet) {
