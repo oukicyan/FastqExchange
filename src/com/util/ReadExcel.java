@@ -70,14 +70,16 @@ public class ReadExcel {
 				continue;
 			}
 			// Read the Row
-			for (int rowNum = 0; rowNum < xssfSheet.getLastRowNum(); rowNum++) {
+			for (int rowNum = 0; rowNum <= xssfSheet.getLastRowNum(); rowNum++) {
 				XSSFRow xssfRow = xssfSheet.getRow(rowNum);
-				Object[] rowData = new Object[xssfRow.getLastCellNum()];
-				for (int cellNum = 0; cellNum < xssfRow.getLastCellNum(); cellNum++) {
-					XSSFCell hssfCell = xssfRow.getCell(cellNum);
-					rowData[cellNum] = getValue(hssfCell);
+				if (null != xssfRow) {
+					Object[] rowData = new Object[xssfRow.getLastCellNum()];
+					for (int cellNum = 0; cellNum < xssfRow.getLastCellNum(); cellNum++) {
+						XSSFCell hssfCell = xssfRow.getCell(cellNum);
+						rowData[cellNum] = getValue(hssfCell);
+					}
+					list.add(rowData);
 				}
-				list.add(rowData);
 			}
 			map.put(xssfSheet.getSheetName(), list);
 		}
@@ -106,14 +108,18 @@ public class ReadExcel {
 				continue;
 			}
 			// Read the Row
-			for (int rowNum = 0; rowNum < hssfSheet.getLastRowNum(); rowNum++) {
-				HSSFRow hssfRow = hssfSheet.getRow(rowNum);
-				Object[] rowData = new Object[hssfRow.getLastCellNum()];
-				for (int cellNum = 0; cellNum < hssfRow.getLastCellNum(); cellNum++) {
-					HSSFCell hssfCell = hssfRow.getCell(cellNum);
-					rowData[cellNum] = getValue(hssfCell);
+			if (hssfSheet.getLastRowNum() > 0) {
+				for (int rowNum = 0; rowNum <= hssfSheet.getLastRowNum(); rowNum++) {
+					HSSFRow hssfRow = hssfSheet.getRow(rowNum);
+					if (null != hssfRow) {
+						Object[] rowData = new Object[hssfRow.getLastCellNum()];
+						for (int cellNum = 0; cellNum < hssfRow.getLastCellNum(); cellNum++) {
+							HSSFCell hssfCell = hssfRow.getCell(cellNum);
+							rowData[cellNum] = getValue(hssfCell);
+						}
+						list.add(rowData);
+					}
 				}
-				list.add(rowData);
 			}
 			map.put(hssfSheet.getSheetName(), list);
 		}

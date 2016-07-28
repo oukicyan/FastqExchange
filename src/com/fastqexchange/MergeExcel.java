@@ -1,6 +1,5 @@
 package com.fastqexchange;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,7 +13,6 @@ import org.apache.log4j.Logger;
 
 import com.util.ProfileUtil;
 import com.util.ReadExcel;
-import com.util.ReadFile;
 import com.util.WriteFile;
 
 public class MergeExcel {
@@ -38,19 +36,18 @@ public class MergeExcel {
 		log.info("MergeExcel start..." + new Date());
 		String inputfiles = ProfileUtil.getStringProfile("MergeExcelFile_inputfile");
 		String outputfile = ProfileUtil.getStringProfile("MergeExcelFile_outputfile");
-		String key = ProfileUtil.getStringProfile("MergeExcelFile_key");
-		String[] keyList=key.split(";");
 
-		Map<String, String[]> map = new HashMap<String, String[]>();
 		List<String> datalist = new ArrayList<String>();
 
 		// 读取文件
 		Map<String, List<Object[]>> inputdata_map = ReadExcel.readExcel(inputfiles);
-		Map<String,String> titleMap=new HashMap<String,String>();
 		TreeMap<String, Integer> titleTempMap = new TreeMap<String, Integer>();
 		List<String> titleList=new ArrayList<String>();
 		Map<String,String[]> dataMap=new HashMap<String,String[]>();
+		// 输出文件的title
 		List<String> titleOrderList=new ArrayList<String>();
+		// 各Sheet的title顺序
+		Map<String,Map<String,Integer>> titleOrderMap=new HashMap<String,Map<String,Integer>>();
 		
 		// 处理title
 		for (String sheetName : inputdata_map.keySet()) {
@@ -58,14 +55,15 @@ public class MergeExcel {
 			if (null != dataRowList && dataRowList.size() > 0) {
 				Object[] data1st = dataRowList.get(0);
 				int i = 0;
+				Map<String,Integer> titleOrderTempMap=new HashMap<String,Integer>();
 				for (Object data : data1st) {
 					String title = data.toString();
 					if(title.endsWith("1")){
 						titleOrderList.add(title.substring(0, title.length()-1));
 					}
 					if ("protein group".equals(title.toLowerCase()) || "peptide_ids".equals(title.toLowerCase())) {
-//						titleList.add(title + "_" + sheetName);
 						titleTempMap.put(title + "_" + sheetName, i);
+						titleOrderTempMap.put(title + "_" + sheetName, i);
 						if (!titleTempMap.containsKey(title + "_collSet")) {
 							titleTempMap.put(title + "_collSet", i);
 						}
@@ -74,9 +72,13 @@ public class MergeExcel {
 						}
 					} else if (!titleTempMap.containsKey(title.toString())) {
 						titleTempMap.put(title, i);
+						titleOrderTempMap.put(title, i);
+					}else{
+						titleOrderTempMap.put(title, i);
 					}
 					i++;
 				}
+				titleOrderMap.put(sheetName, titleOrderTempMap);
 			}
 		}
 		
@@ -104,106 +106,101 @@ public class MergeExcel {
 		
 		for (String sheetName : inputdata_map.keySet()) {
 			List<Object[]> dataRowList = inputdata_map.get(sheetName);
+			Map<String,Integer> titleOrderTempMap=titleOrderMap.get(sheetName);
 			if (null != dataRowList && dataRowList.size() > 0) {
-				Object[] data1st = dataRowList.get(0);
-				int i = 0;
-				for (Object data : data1st) {
-					
+				for (int i = 1; i < dataRowList.size(); i++) {
+					Object[] data = dataRowList.get(i);
+					String datakey=data[0].toString();
+					if(null==datakey||"".equals(datakey)){
+						continue;
+					}
+					String[] outputData=dataMap.get(datakey);
+					if(null==outputData){
+						outputData = new String[titleList.size()];
+					}
+					for (int j = 0; j < titleList.size(); j++) {
+						String title = titleList.get(j);
+						if (titleOrderTempMap.containsKey(title)) {
+							int index = titleOrderTempMap.get(title);
+							outputData[j] = data[index].toString();
+						} else {
+							if (null == outputData[j] && !"0".equals(outputData[j])) {
+								outputData[j] = "0";
+							}
+						}
+
+					}
+					dataMap.put(datakey, outputData);
 				}
 			}
 		}
 		
-//		String[] inputfileArr = inputfiles.split(";");
-//		String[] outtitleArr = new String[5 + 3 * (inputfileArr.length)];
-//		outtitleArr[0] = "gene";
-//		outtitleArr[1] = "major protein";
-//		for (int k = 0; k < inputfileArr.length; k++) {
-//			outtitleArr[2 + k] = "file" + (k + 1);
-//		}
-//
-//		int fileindex = -1;
-//
-//		for (int k = 0; k < inputfileArr.length; k++) {
-//			String inputfile = inputfileArr[k];
-//			List<String> list = ReadFile.readFile("", new File(inputfile));
-//			if (list.size() > 0) {
-//				// 处理title
-//				String title = list.get(0);
-//				String[] titleArr = title.split("\t");
-//
-//				outtitleArr[2 + inputfileArr.length + 3 * k] = titleArr[5];
-//				outtitleArr[2 + inputfileArr.length + 3 * k + 1] = titleArr[6];
-//				outtitleArr[2 + inputfileArr.length + 3 * k + 2] = titleArr[7];
-//
-//				for (int i = 1; i < list.size(); i++) {
-//					String dataStr = list.get(i);
-//					String[] dataArr = dataStr.split("\t");
-//					String[] outdataArr = new String[5 + 3 * (inputfileArr.length)];
-//					for (int l = 2; l < 2 + inputfileArr.length; l++) {
-//						outdataArr[l] = "0";
-//					}
-//					for (int l = 2 + inputfileArr.length; l < outdataArr.length; l++) {
-//						outdataArr[l] = "N/A";
-//					}
-//
-//					if (map.containsKey(dataArr[1])) {
-//						if (k == fileindex) {
-//							System.out.println("!!k=" + k + ":" + dataArr[1]);
-//						}
-//						outdataArr = map.get(dataArr[1]);
-//					} else {
-//						outdataArr[0] = dataArr[0];
-//						outdataArr[1] = dataArr[1];
-//					}
-//
-//					outdataArr[2 + k] = "1";
-//					outdataArr[2 + inputfileArr.length + 3 * k] = dataArr[5];
-//					outdataArr[2 + inputfileArr.length + 3 * k + 1] = dataArr[6];
-//					outdataArr[2 + inputfileArr.length + 3 * k + 2] = dataArr[7];
-//
-//					map.put(dataArr[1], outdataArr);
-//				}
-//
-//			}
-//			fileindex = k;
-//		}
-
 		StringBuffer dataSb = new StringBuffer();
-//		for (int j = 0; j < 5; j++) {
-//			dataSb.append(outtitleArr[j]).append("\t");
-//		}
-//		for (int j = 0; j < inputfileArr.length; j++) {
-//			dataSb.append(outtitleArr[5 + j]).append("\t");
-//			dataSb.append(outtitleArr[5 + j + 3]).append("\t");
-//			dataSb.append(outtitleArr[5 + j + 6]).append("\t");
-//		}
-//		datalist.add(dataSb.toString());
-//
-//		for (String s : map.keySet()) {
-//			String[] outdataArr = map.get(s);
-//			dataSb = new StringBuffer();
-//			for (int j = 0; j < 5; j++) {
-//				dataSb.append(outdataArr[j]).append("\t");
-//			}
-//			for (int j = 0; j < inputfileArr.length; j++) {
-//				dataSb.append(outdataArr[5 + j]).append("\t");
-//				dataSb.append(outdataArr[5 + j + 3]).append("\t");
-//				dataSb.append(outdataArr[5 + j + 6]).append("\t");
-//			}
-//			datalist.add(dataSb.toString());
-//		}
-		
 		// 输出title
 		for(String title:titleList){
 			dataSb.append(title).append("\t");
 		}
 		datalist.add(dataSb.toString());
+		for(String data:dataMap.keySet()){
+			dataSb = new StringBuffer();
+			for(int i=0;i<dataMap.get(data).length;i++){
+				String title=titleList.get(i);
+				if(title.endsWith("collSet")){
+					List<String> list=new ArrayList<String>();
+					list.add(dataMap.get(data)[i-2]);
+					list.add(dataMap.get(data)[i-1]);
+					List<String> result=getCollDiffSet(list);
+					
+					dataSb.append(result.get(0)).append("\t").append(result.get(1)).append("\t");
+					i++;
+				}else{
+					String s=dataMap.get(data)[i];
+					dataSb.append(s).append("\t");
+				}
+			}
+			datalist.add(dataSb.toString());
+		}
 
 		WriteFile.writeFile(new FileWriter(outputfile), datalist);
 
 		log.info("output count:" + Integer.toString(datalist.size() - 1));
 		log.info("MergeExcel end..." + new Date());
 		System.exit(0);
+	}
+	
+	static List<String> getCollDiffSet(List<String> list) {
+		List<String> result = new ArrayList<String>();
+		List<String> collSet = new ArrayList<String>();
+		List<String> diffSet = new ArrayList<String>();
+		for (int i = 0; i < list.size(); i++) {
+			String[] dataArr = list.get(i).split(";");
+			for (String s : dataArr) {
+				if (i != 0) {
+					if (collSet.contains(s)) {
+						diffSet.add(s);
+					}
+				}
+				if (!collSet.contains(s)) {
+					collSet.add(s);
+				}
+			}
+
+		}
+		StringBuffer collSb = new StringBuffer();
+		for (String s : collSet) {
+			collSb.append(s).append(";");
+		}
+		StringBuffer diffSb = new StringBuffer();
+		if (diffSet.size() > 0) {
+			for (String s : diffSet) {
+				diffSb.append(s).append(";");
+			}
+		} else {
+			diffSb.append("0");
+		}
+		result.add(collSb.toString());
+		result.add(diffSb.toString());
+		return result;
 	}
 
 }
