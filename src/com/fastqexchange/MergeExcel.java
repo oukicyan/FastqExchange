@@ -30,9 +30,6 @@ public class MergeExcel {
 	 * 有可能两组的protein group和Peptide_IDs不一样
 	 * 前两列是group_Bio1和group_Bio2+3，第三列是group
 	 * Peptide_IDs也这样
-	 * @param args
-	 * @throws Exception
-	 * @throws ConfigurationException
 	 */
 	public static void main(String[] args) throws ConfigurationException, Exception {
 		log.info("MergeExcel start..." + new Date());
