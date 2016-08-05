@@ -205,6 +205,9 @@ public class MergeExcel {
 		}
 		StringBuffer diffSb = new StringBuffer();
 		if (diffSet.size() > 0) {
+			//½»¼¯or²î¼¯
+			collSet.removeAll(diffSet);
+			diffSet=collSet;
 			for (String s : diffSet) {
 				diffSb.append(s).append(";");
 			}
