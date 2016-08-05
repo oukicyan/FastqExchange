@@ -1,5 +1,6 @@
 package com.fastqexchange;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.util.ProfileUtil;
 import com.util.ReadExcel;
+import com.util.ReadFile;
 import com.util.WriteFile;
 
 public class MergeExcel {
@@ -40,7 +42,23 @@ public class MergeExcel {
 		List<String> datalist = new ArrayList<String>();
 
 		// ¶ÁÈ¡ÎÄ¼þ
-		Map<String, List<Object[]>> inputdata_map = ReadExcel.readExcel(inputfiles);
+		Map<String, List<Object[]>> inputdata_map = null;
+		if (inputfiles.contains("xls") || inputfiles.contains("xlsx")) {
+			inputdata_map = ReadExcel.readExcel(inputfiles);
+		} else {
+			inputdata_map = new HashMap<String, List<Object[]>>();
+			String[] inputfileArr = inputfiles.split(";");
+			for (int k = 0; k < inputfileArr.length; k++) {
+				String inputfile = inputfileArr[k];
+				List<String> list = ReadFile.readFile("", new File(inputfile));
+				List<Object[]> templist = new ArrayList<Object[]>();
+				for (String s : list) {
+					templist.add(s.split("\t"));
+				}
+				inputdata_map.put(inputfile, templist);
+			}
+		}
+		
 		TreeMap<String, Integer> titleTempMap = new TreeMap<String, Integer>();
 		List<String> titleList=new ArrayList<String>();
 		Map<String,String[]> dataMap=new HashMap<String,String[]>();
