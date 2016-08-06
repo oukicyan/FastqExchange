@@ -16,9 +16,9 @@ import com.util.ProfileUtil;
 import com.util.ReadFile;
 import com.util.WriteFile;
 
-public class GetSANITFile {
+public class GetSAINTFile {
 
-	private static final Logger log = Logger.getLogger(GetSANITFile.class);
+	private static final Logger log = Logger.getLogger(GetSAINTFile.class);
 
 	/**
 	 * @param args
@@ -27,14 +27,14 @@ public class GetSANITFile {
 	 */
 	public static void main(String[] args) throws ConfigurationException,
 			Exception {
-		log.info("GetSANITFile start..." + new Date());
-		String inputfiles = ProfileUtil.getStringProfile("inputfile_GetSANITFile");
-		String outputfile_bait = ProfileUtil.getStringProfile("outputfile_GetSANITFile_bait");
-		String outputfile_inter = ProfileUtil.getStringProfile("outputfile_GetSANITFile_inter");
-		String outputfile_prey = ProfileUtil.getStringProfile("outputfile_GetSANITFile_prey");
-		String BaitName = ProfileUtil.getStringProfile("GetSANITFile_BaitName");
-		String T_Cs = ProfileUtil.getStringProfile("GetSANITFile_T_C");
-		String Intensity_SC = ProfileUtil.getStringProfile("GetSANITFile_I_S");
+		log.info("GetSAINTFile start..." + new Date());
+		String inputfiles = ProfileUtil.getStringProfile("inputfile_GetSAINTFile");
+		String outputfile_bait = ProfileUtil.getStringProfile("outputfile_GetSAINTFile_bait");
+		String outputfile_inter = ProfileUtil.getStringProfile("outputfile_GetSAINTFile_inter");
+		String outputfile_prey = ProfileUtil.getStringProfile("outputfile_GetSAINTFile_prey");
+		String BaitName = ProfileUtil.getStringProfile("GetSAINTFile_BaitName");
+		String T_Cs = ProfileUtil.getStringProfile("GetSAINTFile_T_C");
+		String Intensity_SC = ProfileUtil.getStringProfile("GetSAINTFile_I_S");
 		
 		List<String> baitList = new ArrayList<String>();
 		List<String> interList = new ArrayList<String>();
@@ -119,7 +119,7 @@ public class GetSANITFile {
 		WriteFile.writeFile(new FileWriter(outputfile_prey), preyList);
 		
 		log.info("output count:" + Integer.toString(baitList.size() - 1));
-		log.info("GetSANITFile end..." + new Date());
+		log.info("GetSAINTFile end..." + new Date());
 		System.exit(0);
 	}
 	
