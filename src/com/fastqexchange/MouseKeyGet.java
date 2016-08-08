@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 
 import com.util.ProfileUtil;
 import com.util.ReadFile;
-import com.util.StringUtil;
 import com.util.WriteFile;
 
 public class MouseKeyGet {
@@ -32,6 +31,7 @@ public class MouseKeyGet {
 		List<String> outList = new ArrayList<String>();
 		String key = "";
 		String gn = "";
+		String pe = "";
 		String[] spArr;
 		System.out.println("input file data count:" + list.size());
 		int i = 0;
@@ -53,31 +53,25 @@ public class MouseKeyGet {
 						gn = spArr[1].substring(0, spArr[1].indexOf(" "));
 					} catch (StringIndexOutOfBoundsException e) {
 						gn = spArr[1];
-						// log.error("date error(gn)!" + o);
+					}
+				}
+				spArr = o.split("PE=");
+				if (spArr.length >= 2) {
+					try {
+						pe = spArr[1].substring(0, spArr[1].indexOf(" "));
+					} catch (StringIndexOutOfBoundsException e) {
+						pe = spArr[1];
 					}
 				}
 			}
 			if (!"1".equals(mouse_count_flag) || ("1".equals(mouse_count_flag) && i % 2 == 1)) {
 				if (!"".equals(key)) {
-					
-//					if(key.length()>6){
-//						sp="		";
-//					}else{
-//						sp="			";
-//					}
-					if (!"1".equals(mouse_count_flag)) {
-						outList.add(key + sp + gn);
-					} else {
-//						if(gn.length()>7){
-//							sp1="		";
-//						}else if(gn.length()>5){
-//							sp1="			";
-//						}else if(gn.length()<=3){
-//							sp1="					";
-//						}else{
-//							sp1="				";
-//						}
+					if("1".equals(mouse_count_flag)) {
 						outList.add(key + sp + gn + sp1 + o);
+					}else if("2".equals(mouse_count_flag)){
+						outList.add(key + sp + gn + pe);
+					}else{
+						outList.add(key + sp + gn);
 					}
 				} else {
 					log.error("date error(key or gn is blank)!" + o);
