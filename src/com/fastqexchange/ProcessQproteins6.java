@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -47,7 +48,6 @@ public class ProcessQproteins6 {
 			log.error("QProteins,SC,ionscore files records count not equal! QProteins:" + list_QProteins.size()
 					+ ",SC:" + list_QProteins_SC.size() + ",ionscore:" + list_QProteins_ionscore.size());
 		} else {
-//			if (list_QProteins.size() > 0) {
 
 				String title_SC = list_QProteins_SC.get(0);
 				String[] title_SCArr = title_SC.split("\t");
@@ -117,15 +117,16 @@ public class ProcessQproteins6 {
 					}
 				}
 				list_QProteins.remove(0);
-//			}
 			Map<String, String[]> map_mouse = new HashMap<String, String[]>();
+			Map<String, String> map_mouse_pe = new HashMap<String, String>();
 			String[] mouseArr;
 			for (String mouse : list_mouse) {
 				mouseArr = mouse.split("\t");
-				if (mouseArr.length != 3) {
+				if (mouseArr.length != 4) {
 					log.error("mouse file's field number is wrong!" + list_mouse);
 				} else {
 					map_mouse.put(mouseArr[0], mouseArr);
+					map_mouse_pe.put(mouseArr[0], mouseArr[3]);
 				}
 			}
 
@@ -159,8 +160,12 @@ public class ProcessQproteins6 {
 					major_protein = accNoArr[0].split("\\|")[0];
 					protein_group = accNoArr[0].split("\\|")[0]+";";
 				} else {
+					TreeMap<Integer, String> tempPeMap = new TreeMap<Integer, String>();
+					String tempPeS="";
+					int tempPe = 9999;
 					for (int i = 0; i < accNoArr.length; i++) {
 						String s = accNoArr[i];
+						
 						if ("".equals(major_protein) && s.startsWith("crap")) {
 							major_protein = "crap";
 						} else {
@@ -171,6 +176,28 @@ public class ProcessQproteins6 {
 								protein_group += s.split("\\|")[0] + ";";
 							}
 						}
+						
+						if (map_mouse_pe.containsKey(s)) {
+							tempPeS = map_mouse_pe.get(s);
+							try {
+								tempPe = Integer.parseInt(tempPeS);
+
+								if (!tempPeMap.containsKey(tempPe)) {
+									tempPeMap.put(tempPe, s);
+								}
+
+							} catch (NumberFormatException e) {
+								tempPe = 9999;
+								log.error("PE change error! PE=" + tempPeS + "(" + s + ")");
+							}
+							
+						} else {
+							log.error("Couldn't found PE error! (" + s + ")");
+						}
+					}
+					for (Integer i : tempPeMap.keySet()) {
+						major_protein = tempPeMap.get(i);
+						break;
 					}
 				}
 

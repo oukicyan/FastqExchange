@@ -67,11 +67,9 @@ public class MouseKeyGet {
 			if (!"1".equals(mouse_count_flag) || ("1".equals(mouse_count_flag) && i % 2 == 1)) {
 				if (!"".equals(key)) {
 					if("1".equals(mouse_count_flag)) {
-						outList.add(key + sp + gn + sp1 + o);
-					}else if("2".equals(mouse_count_flag)){
-						outList.add(key + sp + gn + pe);
+						outList.add(key + sp + gn + sp1 + o+ sp + pe);
 					}else{
-						outList.add(key + sp + gn);
+						outList.add(key + sp + gn + sp + pe);
 					}
 				} else {
 					log.error("date error(key or gn is blank)!" + o);
