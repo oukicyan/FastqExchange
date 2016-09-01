@@ -54,18 +54,16 @@ public class ReadFile {
 			}else if("mouse".equals(type)){
 				if(lineTxt.startsWith(">sp")){
 					flag = false;
-				}
-				if(lineTxt.contains("MOUSE")){
 					if(0!=mouseLength){
 						list.add(Integer.toString(mouseLength));
 					}
+				}
+				if(!flag){
 					list.add(lineTxt);
 					flag = true;
-//					mouseSb=new StringBuffer();
 					mouseLength=0;
 				}
-				if(!lineTxt.contains("MOUSE")&&flag){
-//					mouseSb.append(lineTxt);
+				if(flag){
 					mouseLength+=lineTxt.length();
 				}
 			}else{

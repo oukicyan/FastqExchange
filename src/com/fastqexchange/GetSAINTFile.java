@@ -62,7 +62,13 @@ public class GetSAINTFile {
 					
 					if ((null == Intensity_SC || "".equals(Intensity_SC)) && (t.startsWith("Intensity_"))
 							|| (null != Intensity_SC && "SC".equals(Intensity_SC) && t.startsWith("SC_"))) {
-						String sample = t.replaceAll("Intensity_", "").replaceAll("SC_", "");
+						String sample = "";
+						if(t.startsWith("Intensity_")){
+							sample = t.replaceFirst("Intensity_", "");
+						}
+						if(t.startsWith("SC_")){
+							sample = t.replaceFirst("SC_", "");
+						}
 						intensityIndexList.add(i);
 						if (!titleList.contains(sample)) {
 							titleList.add(sample);
