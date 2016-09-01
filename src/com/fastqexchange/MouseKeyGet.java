@@ -54,6 +54,8 @@ public class MouseKeyGet {
 					} catch (StringIndexOutOfBoundsException e) {
 						gn = spArr[1];
 					}
+				}else{
+					gn = key;
 				}
 				spArr = o.split("PE=");
 				if (spArr.length >= 2) {
@@ -62,6 +64,8 @@ public class MouseKeyGet {
 					} catch (StringIndexOutOfBoundsException e) {
 						pe = spArr[1];
 					}
+				}else{
+					pe = "9999";
 				}
 			}
 			if (!"1".equals(mouse_count_flag) || ("1".equals(mouse_count_flag) && i % 2 == 1)) {
