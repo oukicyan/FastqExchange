@@ -46,7 +46,7 @@ public class Panda {
 		StringBuffer titleQProteinsSb = new StringBuffer();
 		List<Integer> QProteinsIndex = new ArrayList<Integer>();
 		for (int i = 0; i < title_QProteinsArr.length; i++) {
-			if("Major Protein accession".equals(title_QProteinsArr[i])){
+			if("Protein Group accession".equals(title_QProteinsArr[i])){
 				accNoFieldNo = i;
 			}else if (!"Protein Group ID".equals(title_QProteinsArr[i])&&!"Protein Group accession".equals(title_QProteinsArr[i])&&!"Major Protein accession".equals(title_QProteinsArr[i])) {
 				titleQProteinsSb.append(title_QProteinsArr[i]).append("\t");
