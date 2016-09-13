@@ -32,7 +32,7 @@ public class GetSAINTFile {
 		String outputfile_bait = ProfileUtil.getStringProfile("outputfile_GetSAINTFile_bait");
 		String outputfile_inter = ProfileUtil.getStringProfile("outputfile_GetSAINTFile_inter");
 		String outputfile_prey = ProfileUtil.getStringProfile("outputfile_GetSAINTFile_prey");
-		String BaitName = ProfileUtil.getStringProfile("GetSAINTFile_BaitName");
+		String BaitNames = ProfileUtil.getStringProfile("GetSAINTFile_BaitName");
 		String T_Cs = ProfileUtil.getStringProfile("GetSAINTFile_T_C");
 		String Intensity_SC = ProfileUtil.getStringProfile("GetSAINTFile_I_S");
 		
@@ -43,8 +43,9 @@ public class GetSAINTFile {
 		// ¶ÁÈ¡ÎÄ¼þ
 		String[] inputfileArr=inputfiles.split(";");
 		String[] T_CArr=T_Cs.split(";");
-		if(inputfileArr.length!=T_CArr.length){
-			log.error("Number of files and number of T/C are inconsistent!files number is " + inputfileArr.length + ",T/C number is " + T_CArr.length);
+		String[] BaitNameArr=BaitNames.split(";");
+		if(inputfileArr.length!=T_CArr.length || inputfileArr.length!=BaitNameArr.length){
+			log.error("Number of files and number of T/C and BaitName are inconsistent!files number is " + inputfileArr.length + ",T/C number is " + T_CArr.length+ ",BaitName number is " + BaitNameArr.length);
 			System.exit(0);
 		}
 		for (int k = 0; k < inputfileArr.length; k++) {
@@ -75,7 +76,7 @@ public class GetSAINTFile {
 						}
 					}else if ("gene".equals(t.trim().toLowerCase())) {
 						geneIndex = i;
-					} else if ("major protein".equals(t.trim().toLowerCase())) {
+					} else if (t.trim().toLowerCase().startsWith("major protein")) {
 						majorProteinIndex = i;
 					}
 				}
@@ -110,12 +111,12 @@ public class GetSAINTFile {
 				for (String s : dataMap.keySet()) {
 					tempList = dataMap.get(s);
 					for (String d : tempList) {
-						interList.add(s + "\t" + BaitName + "\t" + d);
+						interList.add(s + "\t" + BaitNameArr[k] + "\t" + d);
 					}
 				}
 				
 				for (String s : titleList) {
-					baitList.add(s + "\t" + BaitName + "\t" + T_CArr[k]);
+					baitList.add(s + "\t" + BaitNameArr[k] + "\t" + T_CArr[k]);
 				}
 			}
 		}
