@@ -57,7 +57,7 @@ public class Panda {
 			}
 		}
 
-		String title = "Protein Group ID\tgene\tMajor Protein accession\tProtein Group accession\tlength\t"+titleQProteinsSb.toString();
+		String title = "Protein Group ID\tgene\tMajor Protein accession\tProtein Group accession\tlength\t"+titleQProteinsSb.toString()+"\tPeptideID_Number";
 		
 		if (null != Sample1 && !"".equals(Sample1)) {
 			title = title.replaceAll("Sample1", Sample1).replaceAll("sample1", Sample1);
@@ -176,11 +176,12 @@ public class Panda {
 			for (int i = 0; i < QProteinsIndex.size(); i++) {
 				if (uniqueFieldNo == QProteinsIndex.get(i)) {
 					uniqueArr = qProteinsArr[QProteinsIndex.get(i)].split(";");
-					outputText.append(sp).append(uniqueArr.length);
+//					outputText.append(sp).append(uniqueArr.length);
 				} else {
-					outputText.append(sp).append(qProteinsArr[QProteinsIndex.get(i)]);
 				}
+				outputText.append(sp).append(qProteinsArr[QProteinsIndex.get(i)]);
 			}
+			outputText.append(sp).append(uniqueArr.length);
 			outList.add(outputText.toString());
 		}
 
