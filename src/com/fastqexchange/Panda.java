@@ -36,7 +36,9 @@ public class Panda {
 		String Sample4 = ProfileUtil.getStringProfile("Sample4");
 		String Sample5 = ProfileUtil.getStringProfile("Sample5");
 		int accNoFieldNo = -1;
-		int uniqueFieldNo = -1;
+//		int uniqueFieldNo = -1;
+		List<String> counterFieldName=new ArrayList<String>();
+		List<Integer> counterFieldNo=new ArrayList<Integer>();
 		List<String> list_mouse = ReadFile.readFile("", new File(inputfile_mouse));
 		List<String> list_QProteins = ReadFile.readFile("", new File(inputfile_QProteins));
 		List<String> outList = new ArrayList<String>();
@@ -51,13 +53,18 @@ public class Panda {
 			}else if (!"Protein Group ID".equals(title_QProteinsArr[i])&&!"Protein Group accession".equals(title_QProteinsArr[i])&&!"Major Protein accession".equals(title_QProteinsArr[i])) {
 				titleQProteinsSb.append(title_QProteinsArr[i]).append("\t");
 				QProteinsIndex.add(i);
-				if (title_QProteinsArr[i].toLowerCase().startsWith("unique")) {
-					uniqueFieldNo = i;
+				if (title_QProteinsArr[i].toLowerCase().startsWith("unique")||title_QProteinsArr[i].equals("PeptideID")) {
+					counterFieldName.add(title_QProteinsArr[i]);
+					counterFieldNo.add(i);
+//					uniqueFieldNo = i;
 				}
 			}
 		}
 
-		String title = "Protein Group ID\tgene\tMajor Protein accession\tProtein Group accession\tlength\t"+titleQProteinsSb.toString()+"\tPeptideID_Number";
+		String title = "Protein Group ID\tgene\tMajor Protein accession\tProtein Group accession\tlength\t"+titleQProteinsSb.toString();
+		for(String s:counterFieldName){
+			title+=s+"_Number\t";
+		}
 		
 		if (null != Sample1 && !"".equals(Sample1)) {
 			title = title.replaceAll("Sample1", Sample1).replaceAll("sample1", Sample1);
@@ -173,15 +180,39 @@ public class Panda {
 			outputText = new StringBuffer();
 			outputText.append(qProteinsArr[0]).append(sp).append((null==mouseArr[1]||"".equals(mouseArr[1].trim()))?major_protein:mouseArr[1]).append(sp).append(major_protein).append(sp).append(protein_group).append(sp).append(mouseArr[2]);
 			String[] uniqueArr=null;
+			List<String> counterContentList=new ArrayList<String>();
 			for (int i = 0; i < QProteinsIndex.size(); i++) {
-				if (uniqueFieldNo == QProteinsIndex.get(i)) {
+				if (counterFieldNo.contains(QProteinsIndex.get(i))) {
 					uniqueArr = qProteinsArr[QProteinsIndex.get(i)].split(";");
 //					outputText.append(sp).append(uniqueArr.length);
+					
+					StringBuffer sb=new StringBuffer();
+					for(String s:uniqueArr){
+						try{
+							//20170107_PeptideID和Unique开头字段数据取消做+1处理
+							//sb.append(Integer.parseInt(s)+1).append(";");
+							sb.append(Integer.parseInt(s)).append(";");
+						}catch(NumberFormatException e){
+							if(null==s||"".equals(s)){
+								sb.append(s);
+							}else{
+								sb.append(s).append(";");
+							}
+						}
+					}
+					outputText.append(sp).append(sb.toString());
+					if(null==qProteinsArr[QProteinsIndex.get(i)]||"".equals(qProteinsArr[QProteinsIndex.get(i)].trim())){
+						counterContentList.add("0");
+					}else{
+						counterContentList.add(uniqueArr.length+"");
+					}
 				} else {
+					outputText.append(sp).append(qProteinsArr[QProteinsIndex.get(i)]);
 				}
-				outputText.append(sp).append(qProteinsArr[QProteinsIndex.get(i)]);
 			}
-			outputText.append(sp).append(uniqueArr.length);
+			for(String s:counterContentList){
+				outputText.append(sp).append(s);
+			}
 			outList.add(outputText.toString());
 		}
 
