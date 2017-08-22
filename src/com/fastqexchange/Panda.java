@@ -35,6 +35,12 @@ public class Panda {
 		String Sample3 = ProfileUtil.getStringProfile("Sample3");
 		String Sample4 = ProfileUtil.getStringProfile("Sample4");
 		String Sample5 = ProfileUtil.getStringProfile("Sample5");
+		String Sample6 = ProfileUtil.getStringProfile("Sample6");
+		String Sample7 = ProfileUtil.getStringProfile("Sample7");
+		String Sample8 = ProfileUtil.getStringProfile("Sample8");
+		String Sample9 = ProfileUtil.getStringProfile("Sample9");
+		String Sample10 = ProfileUtil.getStringProfile("Sample10");
+
 		int accNoFieldNo = -1;
 //		int uniqueFieldNo = -1;
 		List<String> counterFieldName=new ArrayList<String>();
@@ -81,6 +87,22 @@ public class Panda {
 		if (null != Sample5 && !"".equals(Sample5)) {
 			title = title.replaceAll("Sample5", Sample5).replaceAll("sample5", Sample5);
 		}
+	    if (null != Sample6 && !"".equals(Sample6)) {
+	    	title = title.replaceAll("Sample6", Sample6).replaceAll("sample6", Sample6);
+ 		}
+		if (null != Sample7 && !"".equals(Sample7)) {
+			title = title.replaceAll("Sample7", Sample7).replaceAll("sample7", Sample7);
+		}
+		if (null != Sample8 && !"".equals(Sample8)) {
+			title = title.replaceAll("Sample8", Sample8).replaceAll("sample8", Sample8);
+		}
+		if (null != Sample9 && !"".equals(Sample9)) {
+			title = title.replaceAll("Sample9", Sample9).replaceAll("sample9", Sample9);
+		}
+		if (null != Sample10 && !"".equals(Sample10)) {
+			title = title.replaceAll("Sample10", Sample10).replaceAll("sample10", Sample10);
+		}
+		title=title+"\tMW";
 				
 		outList.add(title);
 		list_QProteins.remove(0);
@@ -89,13 +111,17 @@ public class Panda {
 		Map<String, String> map_mouse_pe = new HashMap<String, String>();
 		String[] mouseArr;
 		for (String mouse : list_mouse) {
-			mouseArr = mouse.split("\t");
-			if (mouseArr.length != 4) {
-				log.error("mouse file's field number is wrong!" + mouse);
-			} else {
+			mouseArr = mouse.split(",");
+//			if (mouseArr.length != 4) {
+//				log.error("mouse file's field number is wrong!" + mouse);
+//			} else {
 				map_mouse.put(mouseArr[0], mouseArr);
-				map_mouse_pe.put(mouseArr[0], mouseArr[3]);
-			}
+				if("NA".equals(mouseArr[3])){
+					map_mouse_pe.put(mouseArr[0], "9999");
+				}else{
+					map_mouse_pe.put(mouseArr[0], mouseArr[3]);
+				}
+//			}
 		}
 
 		System.out.println("input file data count:" + list_QProteins.size());
@@ -213,6 +239,7 @@ public class Panda {
 			for(String s:counterContentList){
 				outputText.append(sp).append(s);
 			}
+			outputText.append(sp).append(mouseArr[4].trim());
 			outList.add(outputText.toString());
 		}
 
