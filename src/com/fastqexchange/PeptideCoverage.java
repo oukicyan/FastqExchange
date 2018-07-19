@@ -16,6 +16,11 @@ import com.util.ReadFile;
 import com.util.StringUtil;
 import com.util.WriteFile;
 
+/**
+ * 肽段覆盖度输出
+ * @author whui
+ *
+ */
 public class PeptideCoverage {
 
 	private static final Logger log = Logger.getLogger(PeptideCoverage.class);
@@ -68,6 +73,8 @@ public class PeptideCoverage {
 		int peptideIDIndex=-1;
 		int majorProteinIndex=-1;
 		int lengthIndex=-1;
+		int uniqueCounter=0;
+		String uniqueTitle="";
 		for (int i = 0; i < title_inputfileArr.length; i++) {
 			if (title_inputfileArr[i].equals("PeptideID")) {
 				peptideIDIndex = i;
@@ -75,6 +82,11 @@ public class PeptideCoverage {
 				majorProteinIndex = i;
 			}else if (title_inputfileArr[i].equals("length")) {
 				lengthIndex = i;
+			}else if(title_inputfileArr[i].startsWith("Unique")&&!title_inputfileArr[i].endsWith("_Number")){
+				uniqueCounter++;
+				// 去掉sample1前面的字符
+				uniqueTitle+=title_inputfileArr[i].replaceAll("Unique_pep_ID_", "")+"_Peptides\t";
+				uniqueTitle+=title_inputfileArr[i].replaceAll("Unique_pep_ID_", "")+"_Coverage\t";
 			}
 		}
 		
@@ -83,45 +95,73 @@ public class PeptideCoverage {
 			System.exit(0);
 		}
 		
-		outList.add(title_inputfile+"Peptides Length\tPeptides Coverage");
+		StringBuffer titleSb=new StringBuffer(title_inputfile);
+		titleSb.append("\t").append(uniqueTitle).append("Total_Peptides\t");
+		
+//		for(int i=0;i<uniqueCounter;i++){
+//			titleSb.append(i+"_Coverage\t");
+//		}
+		titleSb.append("Total_Peptide_Coverage\t");
+		outList.add(titleSb.toString());
 		list_inputfile.remove(0);
 
 		System.out.println("input file data count:" + list_inputfile.size());
 		StringBuffer outputText = new StringBuffer();
-		String PeptideID;
+		String[] PeptideID=new String[uniqueCounter+1];
+		
 		String[] inputdataArr;
 		String[] PeptideIDArr;
 		int index=1;
 		String mouseData;
-		double PeptidesCount;
+		Double[] PeptidesCount=new Double[uniqueCounter+1];
+		// 分子
+//		String[] PeptidesCount1=new String[uniqueCounter+1];
 		
 		for (String data : list_inputfile) {
-			inputdataArr=data.split("\t");
-			PeptideID=inputdataArr[peptideIDIndex];
-			PeptideIDArr=PeptideID.split(";");
-			PeptidesArr=new String[PeptideIDArr.length];
-			for(int i=0;i<PeptideIDArr.length;i++){
-				if(PeptidesMap.containsKey(PeptideIDArr[i])){
-				PeptidesArr[i]=PeptidesMap.get(PeptideIDArr[i]);
+			inputdataArr = data.split("\t");
+			//PeptideID=new String[uniqueCounter+1];
+			for (int j = uniqueCounter; j >= 0; j--) {
+				PeptideID[uniqueCounter - j] = inputdataArr[peptideIDIndex - j];
+
+				PeptideIDArr = PeptideID[uniqueCounter - j].split(";");
+				PeptidesArr = new String[PeptideIDArr.length];
+				
+				if(PeptideIDArr.length>0&&!"".equals(PeptideIDArr[0])){
+				for (int i = 0; i < PeptideIDArr.length; i++) {
+					if (PeptidesMap.containsKey(PeptideIDArr[i])) {
+						PeptidesArr[i] = PeptidesMap.get(PeptideIDArr[i]);
+					} else {
+						log.error("PeptideID not in Peptides file!PeptideID is " + PeptideIDArr[i] + "(" + index + ")");
+					}
+				}
+				mouseData = map_mouse.get(inputdataArr[majorProteinIndex]);
+				if (null == mouseData) {
+					log.error("MajorProtein not in mouse file!MajorProtein is " + inputdataArr[majorProteinIndex] + "(" + index + ")");
+					continue;
+				}
+				PeptidesCount[uniqueCounter - j] = StringUtil.getPeptidesCoverage(mouseData, PeptidesArr);
+//				PeptidesCount1[uniqueCounter - j] = mouseData;
 				}else{
-					log.error("PeptideID not in Peptides file!PeptideID is " + PeptideIDArr[i] + "(" + index + ")");
+					PeptidesCount[uniqueCounter - j]=null;
+//					PeptidesCount1[uniqueCounter - j] = "0";
 				}
 			}
 
-			mouseData = map_mouse.get(inputdataArr[majorProteinIndex]);
-			if (null == mouseData) {
-				log.error("MajorProtein not in mouse file!MajorProtein is " + inputdataArr[majorProteinIndex] + "(" + index + ")");
-				continue;
-			}
 			outputText = new StringBuffer();
-			PeptidesCount=StringUtil.getPeptidesCoverage(mouseData, PeptidesArr);
-			outputText.append(data).append("\t").append(PeptidesCount)
-					.append("\t").append(PeptidesCount/Double.parseDouble(inputdataArr[lengthIndex]));
+			outputText.append(data);//.append("\t").append(PeptidesCount[uniqueCounter]);
+			for(int j=0;j<=uniqueCounter;j++){
+				if(null==PeptidesCount[j]||"".equals(PeptidesCount[j])){
+					outputText.append("\t\t");
+				}else{
+					outputText.append("\t").append(PeptidesCount[j]);
+					outputText.append("\t").append(PeptidesCount[j]/Double.parseDouble(inputdataArr[lengthIndex]));
+				}
+			}
 			outList.add(outputText.toString());
 
-			WriteFile.writeFile(new FileWriter(outputfile), outList);
-			log.info("output count:" + Integer.toString(outList.size() - 1));
 		}
+		WriteFile.writeFile(new FileWriter(outputfile), outList);
+		log.info("output count:" + Integer.toString(outList.size() - 1));
 		log.info("PeptideCoverage end..." + new Date());
 		System.exit(0);
 	}

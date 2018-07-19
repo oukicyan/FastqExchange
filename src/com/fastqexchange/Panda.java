@@ -40,6 +40,7 @@ public class Panda {
 		String Sample8 = ProfileUtil.getStringProfile("Sample8");
 		String Sample9 = ProfileUtil.getStringProfile("Sample9");
 		String Sample10 = ProfileUtil.getStringProfile("Sample10");
+		String Label = ProfileUtil.getStringProfile("Label");
 
 		int accNoFieldNo = -1;
 //		int uniqueFieldNo = -1;
@@ -71,39 +72,49 @@ public class Panda {
 		for(String s:counterFieldName){
 			title+=s+"_Number\t";
 		}
-		
-		if (null != Sample1 && !"".equals(Sample1)) {
-			title = title.replaceAll("Sample1", Sample1).replaceAll("sample1", Sample1);
+		if (null != Label && !"".equals(Label)) {
+			title = title.replaceAll("Intensity1", Label + "plex113_Intensity");
+			title = title.replaceAll("Intensity2", Label + "plex114_Intensity");
+			title = title.replaceAll("Intensity3", Label + "plex115_Intensity");
+			title = title.replaceAll("Intensity4", Label + "plex116_Intensity");
+			title = title.replaceAll("Intensity5", Label + "plex117_Intensity");
+			title = title.replaceAll("Intensity6", Label + "plex118_Intensity");
+			title = title.replaceAll("Intensity7", Label + "plex119_Intensity");
+			title = title.replaceAll("Intensity8", Label + "plex121_Intensity");
+		} else {
+			if (null != Sample1 && !"".equals(Sample1)) {
+				title = title.replaceAll("Sample1", Sample1).replaceAll("sample1", Sample1);
+			}
+			if (null != Sample2 && !"".equals(Sample2)) {
+				title = title.replaceAll("Sample2", Sample2).replaceAll("sample2", Sample2);
+			}
+			if (null != Sample3 && !"".equals(Sample3)) {
+				title = title.replaceAll("Sample3", Sample3).replaceAll("sample3", Sample3);
+			}
+			if (null != Sample4 && !"".equals(Sample4)) {
+				title = title.replaceAll("Sample4", Sample4).replaceAll("sample4", Sample4);
+			}
+			if (null != Sample5 && !"".equals(Sample5)) {
+				title = title.replaceAll("Sample5", Sample5).replaceAll("sample5", Sample5);
+			}
+			if (null != Sample6 && !"".equals(Sample6)) {
+				title = title.replaceAll("Sample6", Sample6).replaceAll("sample6", Sample6);
+			}
+			if (null != Sample7 && !"".equals(Sample7)) {
+				title = title.replaceAll("Sample7", Sample7).replaceAll("sample7", Sample7);
+			}
+			if (null != Sample8 && !"".equals(Sample8)) {
+				title = title.replaceAll("Sample8", Sample8).replaceAll("sample8", Sample8);
+			}
+			if (null != Sample9 && !"".equals(Sample9)) {
+				title = title.replaceAll("Sample9", Sample9).replaceAll("sample9", Sample9);
+			}
+			if (null != Sample10 && !"".equals(Sample10)) {
+				title = title.replaceAll("Sample10", Sample10).replaceAll("sample10", Sample10);
+			}
 		}
-		if (null != Sample2 && !"".equals(Sample2)) {
-			title = title.replaceAll("Sample2", Sample2).replaceAll("sample2", Sample2);
-		}
-		if (null != Sample3 && !"".equals(Sample3)) {
-			title = title.replaceAll("Sample3", Sample3).replaceAll("sample3", Sample3);
-		}
-		if (null != Sample4 && !"".equals(Sample4)) {
-			title = title.replaceAll("Sample4", Sample4).replaceAll("sample4", Sample4);
-		}
-		if (null != Sample5 && !"".equals(Sample5)) {
-			title = title.replaceAll("Sample5", Sample5).replaceAll("sample5", Sample5);
-		}
-	    if (null != Sample6 && !"".equals(Sample6)) {
-	    	title = title.replaceAll("Sample6", Sample6).replaceAll("sample6", Sample6);
- 		}
-		if (null != Sample7 && !"".equals(Sample7)) {
-			title = title.replaceAll("Sample7", Sample7).replaceAll("sample7", Sample7);
-		}
-		if (null != Sample8 && !"".equals(Sample8)) {
-			title = title.replaceAll("Sample8", Sample8).replaceAll("sample8", Sample8);
-		}
-		if (null != Sample9 && !"".equals(Sample9)) {
-			title = title.replaceAll("Sample9", Sample9).replaceAll("sample9", Sample9);
-		}
-		if (null != Sample10 && !"".equals(Sample10)) {
-			title = title.replaceAll("Sample10", Sample10).replaceAll("sample10", Sample10);
-		}
-		title=title+"\tMW";
-				
+		title = title + "MW";
+
 		outList.add(title);
 		list_QProteins.remove(0);
 		
@@ -135,6 +146,8 @@ public class Panda {
 		int index = 0;
 		StringBuffer outputText = new StringBuffer();
 		for (String qProteins : list_QProteins) {
+			boolean isSp=false;
+			boolean isTr=false;
 			index++;
 			qProteinsArr = qProteins.split("\t");
 			try {
@@ -143,14 +156,26 @@ public class Panda {
 				System.out.println("Major Protein accession=" + accNo + ",qProteinsArr's length=" + qProteinsArr.length);
 			}
 
-			accNo = accNo.replaceAll("sp\\|", "");
+//			if(accNo.contains("sp|")){
+//				accNo = accNo.replaceAll("sp\\|", "");
+//				isSp=true;
+//			}
+//			if(accNo.contains("tr|")){
+//				accNo = accNo.replaceAll("tr\\|", "");
+//				isTr=true;
+//			}
 
 			major_protein = "";
 			protein_group = "";
 			accNoArr = accNo.split(";");
 			if (accNoArr.length == 1) {
-				major_protein = accNoArr[0].split("\\|")[0];
-				protein_group = accNoArr[0].split("\\|")[0] + ";";
+				if (accNoArr[0].split("\\|").length > 1) {
+					major_protein = accNoArr[0].split("\\|")[1];
+					protein_group = accNoArr[0].split("\\|")[0] + "|" + accNoArr[0].split("\\|")[1] + ";";
+				} else {
+					major_protein = accNoArr[0];
+					protein_group = accNoArr[0];
+				}
 			} else {
 				TreeMap<Integer, String> tempPeMap = new TreeMap<Integer, String>();
 				String tempPeS = "";
@@ -162,15 +187,25 @@ public class Panda {
 						major_protein = "crap";
 					} else {
 						if ("".equals(major_protein) || major_protein.startsWith("crap")) {
-							major_protein = s.split("\\|")[0];
+							if (s.split("\\|").length > 1) {
+								major_protein = s.split("\\|")[1];
+							} else {
+								major_protein = s;
+							}
 						}
 						if (true) {
-							protein_group += s.split("\\|")[0] + ";";
+							if (s.split("\\|").length > 1) {
+								protein_group += s.split("\\|")[0] + "|" + s.split("\\|")[1] + ";";
+							} else {
+								protein_group += s + ";";
+							}
 						}
 					}
 
-					if (map_mouse_pe.containsKey(s)) {
-						tempPeS = map_mouse_pe.get(s);
+					String s1=s.replaceAll("sp\\|", "").replaceAll("tr\\|", "");
+					
+					if (map_mouse_pe.containsKey(s1.split("\\|")[0])) {
+						tempPeS = map_mouse_pe.get(s1.split("\\|")[0]);
 						try {
 							tempPe = Integer.parseInt(tempPeS);
 
@@ -188,7 +223,11 @@ public class Panda {
 					}
 				}
 				for (Integer i : tempPeMap.keySet()) {
-					major_protein = tempPeMap.get(i);
+					if(tempPeMap.get(i).split("\\|").length>1){
+						major_protein = tempPeMap.get(i).split("\\|")[1];
+					}else{
+						major_protein = tempPeMap.get(i);
+					}
 					break;
 				}
 			}
