@@ -58,6 +58,7 @@ public class GetSAINTFile {
 				List<Integer> intensityIndexList=new ArrayList<Integer>();
 				int geneIndex=-1;
 				int majorProteinIndex=-1;
+				int lengthIndex=-1;
 				for(int i=0;i<titleArr.length;i++){
 					String t=titleArr[i];
 					
@@ -78,6 +79,8 @@ public class GetSAINTFile {
 						geneIndex = i;
 					} else if (t.trim().toLowerCase().startsWith("major protein")) {
 						majorProteinIndex = i;
+					}else if (t.trim().toLowerCase().startsWith("length")) {
+						lengthIndex = i;
 					}
 				}
 				
@@ -102,7 +105,7 @@ public class GetSAINTFile {
 						dataMap.put(interKey, tempList);
 					}
 					
-					preyKey = dataArr[majorProteinIndex] + "\t" + dataArr[geneIndex];
+					preyKey = dataArr[majorProteinIndex] + "\t" + dataArr[lengthIndex] + "\t" + dataArr[geneIndex];
 					if (!preyList.contains(preyKey)) {
 						preyList.add(preyKey);
 					}
