@@ -35,13 +35,6 @@ public class Panda {
 		String Sample3 = ProfileUtil.getStringProfile("Sample3");
 		String Sample4 = ProfileUtil.getStringProfile("Sample4");
 		String Sample5 = ProfileUtil.getStringProfile("Sample5");
-		String Sample6 = ProfileUtil.getStringProfile("Sample6");
-		String Sample7 = ProfileUtil.getStringProfile("Sample7");
-		String Sample8 = ProfileUtil.getStringProfile("Sample8");
-		String Sample9 = ProfileUtil.getStringProfile("Sample9");
-		String Sample10 = ProfileUtil.getStringProfile("Sample10");
-		String Label = ProfileUtil.getStringProfile("Label");
-
 		int accNoFieldNo = -1;
 //		int uniqueFieldNo = -1;
 		List<String> counterFieldName=new ArrayList<String>();
@@ -72,49 +65,23 @@ public class Panda {
 		for(String s:counterFieldName){
 			title+=s+"_Number\t";
 		}
-		if (null != Label && !"".equals(Label)) {
-			title = title.replaceAll("Intensity1", Label + "plex113_Intensity");
-			title = title.replaceAll("Intensity2", Label + "plex114_Intensity");
-			title = title.replaceAll("Intensity3", Label + "plex115_Intensity");
-			title = title.replaceAll("Intensity4", Label + "plex116_Intensity");
-			title = title.replaceAll("Intensity5", Label + "plex117_Intensity");
-			title = title.replaceAll("Intensity6", Label + "plex118_Intensity");
-			title = title.replaceAll("Intensity7", Label + "plex119_Intensity");
-			title = title.replaceAll("Intensity8", Label + "plex121_Intensity");
-		} else {
-			if (null != Sample1 && !"".equals(Sample1)) {
-				title = title.replaceAll("Sample1", Sample1).replaceAll("sample1", Sample1);
-			}
-			if (null != Sample2 && !"".equals(Sample2)) {
-				title = title.replaceAll("Sample2", Sample2).replaceAll("sample2", Sample2);
-			}
-			if (null != Sample3 && !"".equals(Sample3)) {
-				title = title.replaceAll("Sample3", Sample3).replaceAll("sample3", Sample3);
-			}
-			if (null != Sample4 && !"".equals(Sample4)) {
-				title = title.replaceAll("Sample4", Sample4).replaceAll("sample4", Sample4);
-			}
-			if (null != Sample5 && !"".equals(Sample5)) {
-				title = title.replaceAll("Sample5", Sample5).replaceAll("sample5", Sample5);
-			}
-			if (null != Sample6 && !"".equals(Sample6)) {
-				title = title.replaceAll("Sample6", Sample6).replaceAll("sample6", Sample6);
-			}
-			if (null != Sample7 && !"".equals(Sample7)) {
-				title = title.replaceAll("Sample7", Sample7).replaceAll("sample7", Sample7);
-			}
-			if (null != Sample8 && !"".equals(Sample8)) {
-				title = title.replaceAll("Sample8", Sample8).replaceAll("sample8", Sample8);
-			}
-			if (null != Sample9 && !"".equals(Sample9)) {
-				title = title.replaceAll("Sample9", Sample9).replaceAll("sample9", Sample9);
-			}
-			if (null != Sample10 && !"".equals(Sample10)) {
-				title = title.replaceAll("Sample10", Sample10).replaceAll("sample10", Sample10);
-			}
+		
+		if (null != Sample1 && !"".equals(Sample1)) {
+			title = title.replaceAll("Sample1", Sample1).replaceAll("sample1", Sample1);
 		}
-		title = title + "MW";
-
+		if (null != Sample2 && !"".equals(Sample2)) {
+			title = title.replaceAll("Sample2", Sample2).replaceAll("sample2", Sample2);
+		}
+		if (null != Sample3 && !"".equals(Sample3)) {
+			title = title.replaceAll("Sample3", Sample3).replaceAll("sample3", Sample3);
+		}
+		if (null != Sample4 && !"".equals(Sample4)) {
+			title = title.replaceAll("Sample4", Sample4).replaceAll("sample4", Sample4);
+		}
+		if (null != Sample5 && !"".equals(Sample5)) {
+			title = title.replaceAll("Sample5", Sample5).replaceAll("sample5", Sample5);
+		}
+				
 		outList.add(title);
 		list_QProteins.remove(0);
 		
@@ -122,16 +89,16 @@ public class Panda {
 		Map<String, String> map_mouse_pe = new HashMap<String, String>();
 		String[] mouseArr;
 		for (String mouse : list_mouse) {
-			mouseArr = mouse.split(",");
+			if(mouse.contains("\t")){
+				mouseArr = mouse.split("\t");
+			}else{
+				mouseArr = mouse.split(",");
+			}
 //			if (mouseArr.length != 4) {
 //				log.error("mouse file's field number is wrong!" + mouse);
 //			} else {
 				map_mouse.put(mouseArr[0], mouseArr);
-				if("NA".equals(mouseArr[3])){
-					map_mouse_pe.put(mouseArr[0], "9999");
-				}else{
-					map_mouse_pe.put(mouseArr[0], mouseArr[3]);
-				}
+				map_mouse_pe.put(mouseArr[0], mouseArr[3]);
 //			}
 		}
 
@@ -146,8 +113,6 @@ public class Panda {
 		int index = 0;
 		StringBuffer outputText = new StringBuffer();
 		for (String qProteins : list_QProteins) {
-			boolean isSp=false;
-			boolean isTr=false;
 			index++;
 			qProteinsArr = qProteins.split("\t");
 			try {
@@ -156,26 +121,14 @@ public class Panda {
 				System.out.println("Major Protein accession=" + accNo + ",qProteinsArr's length=" + qProteinsArr.length);
 			}
 
-//			if(accNo.contains("sp|")){
-//				accNo = accNo.replaceAll("sp\\|", "");
-//				isSp=true;
-//			}
-//			if(accNo.contains("tr|")){
-//				accNo = accNo.replaceAll("tr\\|", "");
-//				isTr=true;
-//			}
+			accNo = accNo.replaceAll("sp\\|", "");
 
 			major_protein = "";
 			protein_group = "";
 			accNoArr = accNo.split(";");
 			if (accNoArr.length == 1) {
-				if (accNoArr[0].split("\\|").length > 1) {
-					major_protein = accNoArr[0].split("\\|")[1];
-					protein_group = accNoArr[0].split("\\|")[0] + "|" + accNoArr[0].split("\\|")[1] + ";";
-				} else {
-					major_protein = accNoArr[0];
-					protein_group = accNoArr[0];
-				}
+				major_protein = accNoArr[0].split("\\|")[0];
+				protein_group = accNoArr[0].split("\\|")[0] + ";";
 			} else {
 				TreeMap<Integer, String> tempPeMap = new TreeMap<Integer, String>();
 				String tempPeS = "";
@@ -187,25 +140,15 @@ public class Panda {
 						major_protein = "crap";
 					} else {
 						if ("".equals(major_protein) || major_protein.startsWith("crap")) {
-							if (s.split("\\|").length > 1) {
-								major_protein = s.split("\\|")[1];
-							} else {
-								major_protein = s;
-							}
+							major_protein = s.split("\\|")[0];
 						}
 						if (true) {
-							if (s.split("\\|").length > 1) {
-								protein_group += s.split("\\|")[0] + "|" + s.split("\\|")[1] + ";";
-							} else {
-								protein_group += s + ";";
-							}
+							protein_group += s.split("\\|")[0] + ";";
 						}
 					}
 
-					String s1=s.replaceAll("sp\\|", "").replaceAll("tr\\|", "");
-					
-					if (map_mouse_pe.containsKey(s1.split("\\|")[0])) {
-						tempPeS = map_mouse_pe.get(s1.split("\\|")[0]);
+					if (map_mouse_pe.containsKey(s)) {
+						tempPeS = map_mouse_pe.get(s);
 						try {
 							tempPe = Integer.parseInt(tempPeS);
 
@@ -223,11 +166,7 @@ public class Panda {
 					}
 				}
 				for (Integer i : tempPeMap.keySet()) {
-					if(tempPeMap.get(i).split("\\|").length>1){
-						major_protein = tempPeMap.get(i).split("\\|")[1];
-					}else{
-						major_protein = tempPeMap.get(i);
-					}
+					major_protein = tempPeMap.get(i);
 					break;
 				}
 			}
@@ -239,7 +178,7 @@ public class Panda {
 
 			mouseArr = map_mouse.get(major_protein);
 			if (null == mouseArr) {
-				log.error("Major Protein accession not in mouse file!Major Protein accession is " + accNo + "(" + (index + 1) + ")");
+				log.error("Major Protein accession not in mouse file!Major Protein accession is " + accNo + "(" + (index + 1) + "),major_protein:"+major_protein);
 				continue;
 			}
 			outputText = new StringBuffer();
@@ -278,7 +217,6 @@ public class Panda {
 			for(String s:counterContentList){
 				outputText.append(sp).append(s);
 			}
-			outputText.append(sp).append(mouseArr[4].trim());
 			outList.add(outputText.toString());
 		}
 

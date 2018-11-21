@@ -42,7 +42,7 @@ public class VarMods {
 			String data[] = list_Peptides.get(i).split("\t");
 			if (map_Peptides.containsKey(data[1])) {
 				log.error("input Peptides file's sequence has more than on PeptideID !");
-				//System.exit(0);
+				System.exit(0);
 			} else {
 				map_Peptides.put(data[1], data[0]);
 			}

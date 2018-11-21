@@ -84,9 +84,7 @@ public class PeptideCoverage {
 				lengthIndex = i;
 			}else if(title_inputfileArr[i].startsWith("Unique")&&!title_inputfileArr[i].endsWith("_Number")){
 				uniqueCounter++;
-				// 去掉sample1前面的字符
-				uniqueTitle+=title_inputfileArr[i].replaceAll("Unique_pep_ID_", "")+"_Peptides\t";
-				uniqueTitle+=title_inputfileArr[i].replaceAll("Unique_pep_ID_", "")+"_Coverage\t";
+				uniqueTitle+=title_inputfileArr[i]+"_Coverage\t";
 			}
 		}
 		
@@ -96,7 +94,7 @@ public class PeptideCoverage {
 		}
 		
 		StringBuffer titleSb=new StringBuffer(title_inputfile);
-		titleSb.append("\t").append(uniqueTitle).append("Total_Peptides\t");
+		titleSb.append("Peptides Length\t").append(uniqueTitle);
 		
 //		for(int i=0;i<uniqueCounter;i++){
 //			titleSb.append(i+"_Coverage\t");
@@ -114,8 +112,6 @@ public class PeptideCoverage {
 		int index=1;
 		String mouseData;
 		Double[] PeptidesCount=new Double[uniqueCounter+1];
-		// 分子
-//		String[] PeptidesCount1=new String[uniqueCounter+1];
 		
 		for (String data : list_inputfile) {
 			inputdataArr = data.split("\t");
@@ -140,20 +136,17 @@ public class PeptideCoverage {
 					continue;
 				}
 				PeptidesCount[uniqueCounter - j] = StringUtil.getPeptidesCoverage(mouseData, PeptidesArr);
-//				PeptidesCount1[uniqueCounter - j] = mouseData;
 				}else{
 					PeptidesCount[uniqueCounter - j]=null;
-//					PeptidesCount1[uniqueCounter - j] = "0";
 				}
 			}
 
 			outputText = new StringBuffer();
-			outputText.append(data);//.append("\t").append(PeptidesCount[uniqueCounter]);
+			outputText.append(data).append("\t").append(PeptidesCount[uniqueCounter]);
 			for(int j=0;j<=uniqueCounter;j++){
 				if(null==PeptidesCount[j]||"".equals(PeptidesCount[j])){
-					outputText.append("\t\t");
+					outputText.append("\t");
 				}else{
-					outputText.append("\t").append(PeptidesCount[j]);
 					outputText.append("\t").append(PeptidesCount[j]/Double.parseDouble(inputdataArr[lengthIndex]));
 				}
 			}
